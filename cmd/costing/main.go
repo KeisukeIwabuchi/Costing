@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	message := "寝たいです"
+	message := "原価計算しよう"
 
 	fmt.Println(message)
 
