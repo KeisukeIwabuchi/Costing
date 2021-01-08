@@ -39,12 +39,25 @@ func (w WIP) CalculateUnitPrice() float64 {
 	return w.UnitPriceWithAVG()
 }
 
+// CalculateAverageUnitPrice is return average price
+func CalculateAverageUnitPrice(materials ...Material) float64 {
+	var sumPrice float64
+	var sumUnit int
+
+	for _, value := range materials {
+		sumPrice += value.Price
+		sumUnit += value.Unit
+	}
+
+	return sumPrice / float64(sumUnit)
+}
+
 // UnitPriceWithFIFO is Calculate Unit Price with FIFO
 func (w WIP) UnitPriceWithFIFO() float64 {
-	return w.Input.Price / float64(w.Input.Unit)
+	return CalculateAverageUnitPrice(w.Input)
 }
 
 // UnitPriceWithAVG is Calculate Unit Price with Average Method
 func (w WIP) UnitPriceWithAVG() float64 {
-	return (w.First.Price + w.Input.Price) / float64(w.First.Unit+w.Input.Unit)
+	return CalculateAverageUnitPrice(w.First, w.Input)
 }
