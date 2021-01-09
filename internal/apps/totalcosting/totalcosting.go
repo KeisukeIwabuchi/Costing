@@ -1,63 +1,90 @@
 package totalcosting
 
-// Material は材料費を想定しているけど加工費のことも考えると不適切なネーミング
-type Material struct {
+// Element はBOX図の構成要素を想定
+type Element struct {
 	Price float64
 	Unit  int
+	Type  ElementType
 }
 
-// WIP means Work in Process
-type WIP struct {
-	First  Material
-	Input  Material
-	Output Material
-	End    Material
+// Elements はElementの集合体を想定、BOX図の左側と右側を表現するために使う
+type Elements []Element
 
-	CET CalcEndType
-}
+// ElementType はElementの種別を表す
+type ElementType int
 
-// CalcEndType is 月末仕掛品の計算方法
-type CalcEndType int
+// Elementの種別
+const (
+	other ElementType = iota
+	First
+	Input
+	Output
+	Last
+)
+
+// CalculationMethod is 月末仕掛品の計算方法
+type CalculationMethod int
 
 // 月末仕掛品の計算方法(先入先出法 or 平均法)
 const (
-	unknown CalcEndType = iota
+	unknown CalculationMethod = iota
 	FIFO
 	AVG
 )
 
+// BOX is 仕掛品のBOX図
+type BOX struct {
+	Left  Elements
+	Right Elements
+
+	CMethod CalculationMethod
+}
+
 // CalculateUnitPrice is Calculate Unit Price
-func (w WIP) CalculateUnitPrice() float64 {
-	switch w.CET {
+func (b BOX) CalculateUnitPrice() float64 {
+	switch b.CMethod {
 	case FIFO:
-		return w.UnitPriceWithFIFO()
+		return b.UnitPriceWithFIFO()
 	case AVG:
-		return w.UnitPriceWithAVG()
+		return b.UnitPriceWithAVG()
 	}
 
 	// default
-	return w.UnitPriceWithAVG()
+	return b.UnitPriceWithAVG()
 }
 
 // CalculateAverageUnitPrice is return average price
-func CalculateAverageUnitPrice(materials ...Material) float64 {
+func CalculateAverageUnitPrice(e Elements, filter ...ElementType) float64 {
 	var sumPrice float64
 	var sumUnit int
 
-	for _, value := range materials {
-		sumPrice += value.Price
-		sumUnit += value.Unit
+	contains := func(arr []ElementType, e_type ElementType) bool {
+		for _, v := range arr {
+			if e_type == v {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, v := range e {
+		if !contains(filter, v.Type) {
+			continue
+		}
+
+		sumPrice += v.Price
+		sumUnit += v.Unit
 	}
 
 	return sumPrice / float64(sumUnit)
 }
 
 // UnitPriceWithFIFO is Calculate Unit Price with FIFO
-func (w WIP) UnitPriceWithFIFO() float64 {
-	return CalculateAverageUnitPrice(w.Input)
+func (b BOX) UnitPriceWithFIFO() float64 {
+	return CalculateAverageUnitPrice(b.Left, Input)
 }
 
 // UnitPriceWithAVG is Calculate Unit Price with Average Method
-func (w WIP) UnitPriceWithAVG() float64 {
-	return CalculateAverageUnitPrice(w.First, w.Input)
+func (b BOX) UnitPriceWithAVG() float64 {
+	return CalculateAverageUnitPrice(b.Left, First, Input)
 }
