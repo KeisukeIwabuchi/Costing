@@ -2,6 +2,7 @@ package totalcosting
 
 // Element はBOX図の構成要素を想定
 type Element struct {
+	Cost  float64
 	Price float64
 	Unit  int
 	Type  ElementType
@@ -55,7 +56,7 @@ func (b BOX) CalculateUnitPrice() float64 {
 
 // CalculateAverageUnitPrice is return average price
 func CalculateAverageUnitPrice(e Elements, filter ...ElementType) float64 {
-	var sumPrice float64
+	var sumCost float64
 	var sumUnit int
 
 	contains := func(arr []ElementType, e_type ElementType) bool {
@@ -72,11 +73,11 @@ func CalculateAverageUnitPrice(e Elements, filter ...ElementType) float64 {
 			continue
 		}
 
-		sumPrice += v.Price
+		sumCost += v.Cost
 		sumUnit += v.Unit
 	}
 
-	return sumPrice / float64(sumUnit)
+	return sumCost / float64(sumUnit)
 }
 
 // UnitPriceWithFIFO is Calculate Unit Price with FIFO
