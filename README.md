@@ -4,3 +4,8 @@
 ```
 go run cmd/costing/main.go
 ```
+
+テスト
+```
+go test ./...
+```
