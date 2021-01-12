@@ -21,6 +21,10 @@ const (
 	Input
 	Output
 	Last
+	NormalDefect
+	AbnormalDefect
+	NormalImpairment
+	AbnormalImpairment
 )
 
 // CalculationMethod is 月末仕掛品の計算方法
@@ -31,6 +35,15 @@ const (
 	unknown CalculationMethod = iota
 	FIFO
 	AVG
+)
+
+// DefectiveProductMethod 正常仕損の計算方法
+type DefectiveProductMethod int
+
+// 正常仕損の計算方法(度外視法 or 非度外視法)
+const (
+	Neglecting DefectiveProductMethod = iota
+	NonNeglecting
 )
 
 // BOX is 仕掛品のBOX図
