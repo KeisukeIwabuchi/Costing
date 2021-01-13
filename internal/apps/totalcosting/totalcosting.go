@@ -2,10 +2,11 @@ package totalcosting
 
 // Element はBOX図の構成要素を想定
 type Element struct {
-	Cost  float64
-	Price float64
-	Unit  int
-	Type  ElementType
+	Cost     float64
+	Price    float64
+	Unit     int
+	Progress float64
+	Type     ElementType
 }
 
 // Elements はElementの集合体を想定、BOX図の左側と右側を表現するために使う
