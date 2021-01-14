@@ -49,10 +49,12 @@ const (
 
 // BOX is 仕掛品のBOX図
 type BOX struct {
-	Left  Elements
-	Right Elements
-
-	CMethod CalculationMethod
+	Left         Elements
+	Right        Elements
+	VirtualLeft  Elements
+	VirtualRight Elements
+	CMethod      CalculationMethod
+	DMethod      DefectiveProductMethod
 }
 
 // CalculateUnitPrice is Calculate Unit Price
@@ -102,4 +104,43 @@ func (b BOX) UnitPriceWithFIFO() float64 {
 // UnitPriceWithAVG is Calculate Unit Price with Average Method
 func (b BOX) UnitPriceWithAVG() float64 {
 	return CalculateAverageUnitPrice(b.Left, First, Input)
+}
+
+// CreateVirtualLeft is Calculat BOX.VirtualLeft
+func (b BOX) CreateVirtualLeft() {
+	b.VirtualLeft = b.Left
+
+	for _, value := range b.Left {
+		if value.Type != NormalDefect {
+			continue
+		}
+
+		if b.DMethod == Neglecting {
+
+		}
+		if b.DMethod == NonNeglecting {
+
+		}
+	}
+}
+
+// GetElement is return Element
+func GetElement(elements Elements, search ElementType) (Element, bool) {
+	for _, element := range elements {
+		if element.Type == search {
+			return element, true
+		}
+	}
+
+	return Element{}, false
+}
+
+// Contains is ckeck ElementType
+func Contains(arr []ElementType, eType ElementType) bool {
+	for _, v := range arr {
+		if eType == v {
+			return true
+		}
+	}
+	return false
 }
