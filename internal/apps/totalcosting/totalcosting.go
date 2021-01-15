@@ -130,6 +130,30 @@ func (b BOX) CreateVirtualLeft() {
 	// 非度外視法(特に必要な処理無し)
 }
 
+// CreateVirtualRight is Calculat BOX.VirtualRight
+func (b BOX) CreateVirtualRight() {
+	b.VirtualRight = b.Right
+
+	output, _ := GetElement(b.Right, Output)
+	last, _ := GetElement(b.Right, Last)
+	normalDefect, result := GetElement(b.Left, NormalDefect)
+
+	// 正常仕損がなければ終了
+	if !result {
+		return
+	}
+
+	// 度外視法
+	if b.DMethod == Neglecting {
+		// 月末仕掛品の加工進捗度が仕損発生点を超えていない場合(完成品が全部負担)
+		if normalDefect.Progress < last.Progress {
+			output.Unit += normalDefect.Unit
+		}
+	}
+
+	// 非度外視法(特に必要な処理無し)
+}
+
 // GetElement is return Element
 func GetElement(elements Elements, search ElementType) (Element, bool) {
 	for _, element := range elements {
