@@ -110,18 +110,24 @@ func (b BOX) UnitPriceWithAVG() float64 {
 func (b BOX) CreateVirtualLeft() {
 	b.VirtualLeft = b.Left
 
-	for _, value := range b.Left {
-		if value.Type != NormalDefect {
-			continue
-		}
+	input, _ := GetElement(b.Left, Input)
+	last, _ := GetElement(b.Right, Last)
+	normalDefect, result := GetElement(b.Left, NormalDefect)
 
-		if b.DMethod == Neglecting {
+	// 正常仕損がなければ終了
+	if !result {
+		return
+	}
 
-		}
-		if b.DMethod == NonNeglecting {
-
+	// 度外視法
+	if b.DMethod == Neglecting {
+		// 月末仕掛品の加工進捗度が仕損発生点を超えている場合
+		if normalDefect.Progress >= last.Progress {
+			input.Unit -= normalDefect.Unit
 		}
 	}
+
+	// 非度外視法(特に必要な処理無し)
 }
 
 // GetElement is return Element
