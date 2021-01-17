@@ -179,5 +179,61 @@ func Contains(arr []ElementType, eType ElementType) bool {
 
 // Run is culcurate answer
 func (b BOX) Run() {
-	b.CalculateUnitPrice()
+	var product, processing BOX
+	var totalUnitLeft, totalUnitRight int
+
+	for _, v := range b.Left {
+		// BOX図の左側はFirstかInputのみ
+		if v.Type != First && v.Type != Input {
+			panic("Invalid Left Type")
+		}
+
+		// 材料の計算
+		product.Left = append(product.Left, v)
+
+		// 加工費の計算
+		element := v
+		if v.Type == First {
+			// 加工費は加工進捗度をかけて完成品換算量を求める
+			// 当月投入量は差分で求めるのでここでは計算しない
+			element.Unit = int(float64(element.Unit) * element.Progress)
+
+			// 当月投入量のUnitは加算したくないのでLeftではここで足す
+			totalUnitLeft += element.Unit
+		}
+		processing.Left = append(processing.Left, element)
+	}
+
+	for _, v := range b.Right {
+		// BOX図の右側はFirstとInput以外の全て
+		if v.Type == First || v.Type == Input {
+			panic("Invalid Right Type")
+		}
+
+		// 材料の計算
+		product.Right = append(product.Right, v)
+
+		// 加工費の計算
+		element := v
+		if v.Type != Output {
+			// 加工費は加工進捗度をかけて完成品換算量を求める
+			// 完成品はそのまま
+			element.Unit = int(float64(element.Unit) * element.Progress)
+		}
+		processing.Right = append(processing.Right, element)
+
+		// 完成品のUnitも加算したいのでRightではここで足す
+		totalUnitRight += element.Unit
+	}
+
+	// ここまでの計算結果でtotalUnitLeftの方が大きければ何かが間違っている
+	if totalUnitLeft > totalUnitRight {
+		panic("Invalid totalUnitLeft")
+	}
+
+	for _, v := range processing.Left {
+		if v.Type == Input {
+			v.Unit = totalUnitRight - totalUnitLeft
+		}
+	}
 }
