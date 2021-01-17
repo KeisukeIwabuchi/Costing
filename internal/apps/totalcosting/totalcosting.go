@@ -2,11 +2,11 @@ package totalcosting
 
 // Element はBOX図の構成要素を想定
 type Element struct {
+	Type     ElementType
 	Cost     float64
 	Price    float64
 	Unit     int
 	Progress float64
-	Type     ElementType
 }
 
 // Elements はElementの集合体を想定、BOX図の左側と右側を表現するために使う
@@ -16,6 +16,7 @@ type Elements []Element
 type ElementType int
 
 // Elementの種別
+// (月初仕掛品, 当月投入, 完成品, 月末仕掛品, 正常仕損, 異常仕損, 正常減損, 異常減損)
 const (
 	other ElementType = iota
 	First
@@ -49,12 +50,13 @@ const (
 
 // BOX is 仕掛品のBOX図
 type BOX struct {
-	Left         Elements
-	Right        Elements
-	VirtualLeft  Elements
-	VirtualRight Elements
-	CMethod      CalculationMethod
-	DMethod      DefectiveProductMethod
+	Left            Elements
+	Right           Elements
+	VirtualLeft     Elements
+	VirtualRight    Elements
+	CMethod         CalculationMethod
+	DMethod         DefectiveProductMethod
+	ProductAvgPrice float64
 }
 
 // CalculateUnitPrice is Calculate Unit Price
@@ -173,4 +175,9 @@ func Contains(arr []ElementType, eType ElementType) bool {
 		}
 	}
 	return false
+}
+
+// Run is culcurate answer
+func (b BOX) Run() {
+	b.CalculateUnitPrice()
 }

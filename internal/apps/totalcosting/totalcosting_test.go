@@ -78,3 +78,45 @@ func TestUnitPriceWithAVG(t *testing.T) {
 	expected := CalculateAverageUnitPrice(elements, First, Input)
 	assert.Equal(t, expected, actual)
 }
+
+func TestRun(t *testing.T) {
+	first := Element{
+		Type:     First,
+		Cost:     206400,
+		Unit:     300,
+		Progress: 0.6,
+	}
+	input := Element{
+		Type: Input,
+		Cost: 717600,
+		Unit: 1380,
+	}
+	output := Element{
+		Type: Output,
+		Cost: 161640,
+		Unit: 1440,
+	}
+	last := Element{
+		Type:     Last,
+		Cost:     972360,
+		Unit:     240,
+		Progress: 0.3,
+	}
+
+	var left, right Elements
+	left = append(left, first)
+	left = append(left, input)
+	right = append(right, output)
+	right = append(right, last)
+
+	var box BOX
+	box.Left = left
+	box.Right = right
+	box.CMethod = AVG
+
+	box.Run()
+
+	actual := box.ProductAvgPrice
+	expected := 1300.0
+	assert.Equal(t, expected, actual)
+}
