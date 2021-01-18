@@ -8,12 +8,12 @@ import (
 
 func TestCalculateAverageUnitPrice(t *testing.T) {
 	first := Element{
-		Cost: 10000,
+		Cost: []float64{10000},
 		Unit: 100,
 		Type: First,
 	}
 	input := Element{
-		Cost: 50000,
+		Cost: []float64{50000},
 		Unit: 500,
 		Type: Input,
 	}
@@ -33,12 +33,12 @@ func TestCalculateAverageUnitPrice(t *testing.T) {
 
 func TestUnitPriceWithFIFO(t *testing.T) {
 	first := Element{
-		Cost: 10000,
+		Cost: []float64{10000},
 		Unit: 100,
 		Type: First,
 	}
 	input := Element{
-		Cost: 50000,
+		Cost: []float64{50000},
 		Unit: 500,
 		Type: Input,
 	}
@@ -57,12 +57,12 @@ func TestUnitPriceWithFIFO(t *testing.T) {
 
 func TestUnitPriceWithAVG(t *testing.T) {
 	first := Element{
-		Cost: 10000,
+		Cost: []float64{10000},
 		Unit: 100,
 		Type: First,
 	}
 	input := Element{
-		Cost: 50000,
+		Cost: []float64{50000},
 		Unit: 500,
 		Type: Input,
 	}
@@ -82,23 +82,21 @@ func TestUnitPriceWithAVG(t *testing.T) {
 func TestRun(t *testing.T) {
 	first := Element{
 		Type:     First,
-		Cost:     206400,
+		Cost:     []float64{206400, 161640},
 		Unit:     300,
 		Progress: 0.6,
 	}
 	input := Element{
 		Type: Input,
-		Cost: 717600,
+		Cost: []float64{717600, 972360},
 		Unit: 1380,
 	}
 	output := Element{
 		Type: Output,
-		Cost: 161640,
 		Unit: 1440,
 	}
 	last := Element{
 		Type:     Last,
-		Cost:     972360,
 		Unit:     240,
 		Progress: 0.3,
 	}

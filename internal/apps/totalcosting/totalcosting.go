@@ -3,7 +3,7 @@ package totalcosting
 // Element はBOX図の構成要素を想定
 type Element struct {
 	Type     ElementType
-	Cost     float64
+	Cost     []float64
 	Price    float64
 	Unit     int
 	Progress float64
@@ -91,7 +91,9 @@ func CalculateAverageUnitPrice(e Elements, filter ...ElementType) float64 {
 			continue
 		}
 
-		sumCost += v.Cost
+		for _, cost := range v.Cost {
+			sumCost += cost
+		}
 		sumUnit += v.Unit
 	}
 
