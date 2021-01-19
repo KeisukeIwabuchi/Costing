@@ -108,6 +108,7 @@ func TestRun(t *testing.T) {
 	}
 
 	var materialBox, processingBox Box
+	materialBox.InputTiming = 0.0
 	materialBox.Left = append(materialBox.Left, first)
 	materialBox.Left = append(materialBox.Left, input)
 	materialBox.Right = append(materialBox.Right, output)

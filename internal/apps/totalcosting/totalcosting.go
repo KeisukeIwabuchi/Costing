@@ -63,12 +63,13 @@ type RightElement struct {
 
 // Box is 仕掛品のBOX図
 type Box struct {
-	Left      []LeftElement
-	Right     []RightElement
-	CMethod   CalculationMethod
-	DMethod   DefectiveProductMethod
-	FirstCost float64
-	InputCost float64
+	InputTiming float64
+	Left        []LeftElement
+	Right       []RightElement
+	CMethod     CalculationMethod
+	DMethod     DefectiveProductMethod
+	FirstCost   float64
+	InputCost   float64
 }
 
 // TotalCosting is 解く問題
