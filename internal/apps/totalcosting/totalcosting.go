@@ -63,9 +63,6 @@ type Box struct {
 
 // Run is culcurate answer
 func (b Box) Run() {
-	// var product, processing Box
-	// var totalUnitLeft, totalUnitRight int
-
 	for _, cost := range b.Costs {
 		// 定点で投入
 		if !cost.InputOnAvg {
@@ -93,4 +90,18 @@ func (c Cost) CalulateInputUnit(master []Element) {
 // CalulateConversionUnit is 完成品換算量を計算
 func (c Cost) CalulateConversionUnit() {
 
+}
+
+// IsLeftElement is ElementTypeがBox図左側の要素かを確認する
+// true: Left, false: Right
+func (e Element) IsLeftElement() bool {
+	leftElement := []ElementType{First, Input}
+
+	for _, v := range leftElement {
+		if e.Type == v {
+			return true
+		}
+	}
+
+	return false
 }
