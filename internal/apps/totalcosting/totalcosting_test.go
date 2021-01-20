@@ -56,3 +56,26 @@ func TestRun(t *testing.T) {
 	expected := 1300.0
 	assert.Equal(t, expected, actual)
 }
+
+func TestIsLeftElement(t *testing.T) {
+	testCases := []struct {
+		E      Element
+		Result bool
+	}{
+		{Element{Type: First}, true},
+		{Element{Type: Input}, true},
+		{Element{Type: Output}, false},
+		{Element{Type: Last}, false},
+		{Element{Type: NormalDefect}, false},
+		{Element{Type: AbnormalDefect}, false},
+		{Element{Type: NormalImpairment}, false},
+		{Element{Type: AbnormalImpairment}, false},
+	}
+
+	for _, testCase := range testCases {
+		result := testCase.E.IsLeftElement()
+		if result != testCase.Result {
+			t.Errorf("Invalid result. testCase:%#v, actual:%t", testCase, result)
+		}
+	}
+}
