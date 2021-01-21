@@ -57,6 +57,46 @@ func TestRun(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestCalulateConversionUnit(t *testing.T) {
+	first := Element{
+		Type:     First,
+		Unit:     300,
+		Progress: 0.6,
+	}
+	input := Element{
+		Type: Input,
+		Unit: 1380,
+	}
+	output := Element{
+		Type: Output,
+		Unit: 1440,
+	}
+	last := Element{
+		Type:     Last,
+		Unit:     240,
+		Progress: 0.3,
+	}
+
+	var master []Element
+	master = append(master, first)
+	master = append(master, input)
+	master = append(master, output)
+	master = append(master, last)
+
+	var material Cost
+	material.InputOnAvg = false
+	material.InputTiming = 0.0
+	material.CMethod = AVG
+	material.FirstCost = 206400
+	material.InputCost = 717600
+
+	material.CalulateInputUnit(master)
+
+	actual := material.Elements[0].Unit
+	expected := 300
+	assert.Equal(t, expected, actual)
+}
+
 func TestIsLeftElement(t *testing.T) {
 	testCases := []struct {
 		E      Element

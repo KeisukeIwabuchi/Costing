@@ -73,23 +73,37 @@ func (b Box) Run() {
 		// 平均的に投入
 		if cost.InputOnAvg {
 			// 完成品換算量を計算
-			cost.CalulateConversionUnit()
+			cost.CalulateConversionUnit(b.Master)
 		}
 	}
 }
 
 // CalulateInputUnit is 投入点と進捗度を比較して、進捗度が投入点以上なら投入
 func (c Cost) CalulateInputUnit(master []Element) {
-	for _, element := range c.Elements {
-		if element.Progress < c.InputTiming {
+	for _, m := range master {
+		var element Element
+
+		element.Type = m.Type
+		if m.Progress < c.InputTiming {
 			element.Unit = 0
+		} else {
+			element.Unit = m.Unit
 		}
+
+		c.Elements = append(c.Elements, element)
 	}
 }
 
 // CalulateConversionUnit is 完成品換算量を計算
-func (c Cost) CalulateConversionUnit() {
+func (c Cost) CalulateConversionUnit(master []Element) {
+	for _, m := range master {
+		var element Element
 
+		element.Type = m.Type
+		element.Unit = int(float64(m.Unit) * m.Progress)
+
+		c.Elements = append(c.Elements, element)
+	}
 }
 
 // IsLeftElement is ElementTypeがBox図左側の要素かを確認する
