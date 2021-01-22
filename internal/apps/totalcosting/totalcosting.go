@@ -84,6 +84,13 @@ func (c Cost) CalulateInputUnit(master []Element) {
 		var element Element
 
 		element.Type = m.Type
+
+		if element.Type == Output {
+			element.Progress = 1.0
+		} else {
+			element.Progress = m.Progress
+		}
+
 		if m.Progress < c.InputTiming {
 			element.Unit = 0
 		} else {
@@ -96,13 +103,41 @@ func (c Cost) CalulateInputUnit(master []Element) {
 
 // CalulateConversionUnit is 完成品換算量を計算
 func (c Cost) CalulateConversionUnit(master []Element) {
+	var sumLeft, sumRight int
+
 	for _, m := range master {
 		var element Element
 
 		element.Type = m.Type
+
+		if element.Type == Input {
+			c.Elements = append(c.Elements, element)
+			continue
+		}
+
+		if element.Type == Output {
+			element.Progress = 1.0
+		} else {
+			element.Progress = m.Progress
+		}
+
 		element.Unit = int(float64(m.Unit) * m.Progress)
 
 		c.Elements = append(c.Elements, element)
+
+		// 投入量計算のための処理
+		// Unitの計算後にやること
+		if element.IsLeftElement() {
+			sumLeft += element.Unit
+		} else {
+			sumRight += element.Unit
+		}
+	}
+
+	for _, e := range c.Elements {
+		if e.Type == Input {
+			e.Unit = sumRight - sumLeft
+		}
 	}
 }
 

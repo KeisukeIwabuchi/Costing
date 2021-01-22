@@ -57,7 +57,7 @@ func TestRun(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestCalulateConversionUnit(t *testing.T) {
+func TestCalulateInputUnit(t *testing.T) {
 	first := Element{
 		Type:     First,
 		Unit:     300,
@@ -86,9 +86,6 @@ func TestCalulateConversionUnit(t *testing.T) {
 	var material Cost
 	material.InputOnAvg = false
 	material.InputTiming = 0.0
-	material.CMethod = AVG
-	material.FirstCost = 206400
-	material.InputCost = 717600
 
 	material.CalulateInputUnit(master)
 
@@ -99,6 +96,49 @@ func TestCalulateConversionUnit(t *testing.T) {
 		240,
 	}
 	for i, e := range material.Elements {
+		actual := e.Unit
+		assert.Equal(t, expected[i], actual)
+	}
+}
+
+func TestCalulateConversionUnit(t *testing.T) {
+	first := Element{
+		Type:     First,
+		Unit:     300,
+		Progress: 0.6,
+	}
+	input := Element{
+		Type: Input,
+		Unit: 1380,
+	}
+	output := Element{
+		Type: Output,
+		Unit: 1440,
+	}
+	last := Element{
+		Type:     Last,
+		Unit:     240,
+		Progress: 0.3,
+	}
+
+	var master []Element
+	master = append(master, first)
+	master = append(master, input)
+	master = append(master, output)
+	master = append(master, last)
+
+	var proccesing Cost
+	proccesing.InputOnAvg = true
+
+	proccesing.CalulateConversionUnit(master)
+
+	expected := []float64{
+		180,
+		1332,
+		1440,
+		72,
+	}
+	for i, e := range proccesing.Elements {
 		actual := e.Unit
 		assert.Equal(t, expected[i], actual)
 	}
