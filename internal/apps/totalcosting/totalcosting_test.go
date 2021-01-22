@@ -92,9 +92,16 @@ func TestCalulateConversionUnit(t *testing.T) {
 
 	material.CalulateInputUnit(master)
 
-	actual := material.Elements[0].Unit
-	expected := 300
-	assert.Equal(t, expected, actual)
+	expected := []float64{
+		300,
+		1380,
+		1440,
+		240,
+	}
+	for i, e := range material.Elements {
+		actual := e.Unit
+		assert.Equal(t, expected[i], actual)
+	}
 }
 
 func TestIsLeftElement(t *testing.T) {
