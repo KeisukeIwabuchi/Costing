@@ -63,6 +63,7 @@ type Box struct {
 
 // Run is culcurate answer
 func (b Box) Run() {
+	// 数量の計算
 	for _, cost := range b.Costs {
 		// 定点で投入
 		if !cost.InputOnAvg {
@@ -74,6 +75,49 @@ func (b Box) Run() {
 		if cost.InputOnAvg {
 			// 完成品換算量を計算
 			cost.CalulateConversionUnit(b.Master)
+		}
+	}
+
+	// 月末仕掛品原価の計算
+	for _, cost := range b.Costs {
+		// 先入先出法
+		if cost.CMethod == FIFO {
+			lastPrice := cost.GetPriceFIFO()
+			totalUnit := 0
+
+			// 完成品以外の平均単価を代入
+			for _, e := range cost.Elements {
+				if e.IsLeftElement() || e.Type == Output {
+					continue
+				}
+
+				e.Price = lastPrice
+				totalUnit += e.Unit
+			}
+
+			// 差額で完成品の平均単価を計算
+			for _, e := range cost.Elements {
+				if e.Type != Output {
+					continue
+				}
+
+				totalCost := cost.FirstCost + cost.InputCost
+				outputCost := totalCost - lastPrice*float64(totalUnit)
+				e.Price = outputCost / float64(e.Unit)
+			}
+		}
+
+		// 平均法
+		if cost.CMethod == AVG {
+			lastPrice := cost.GetPriceAVG()
+
+			for _, e := range cost.Elements {
+				if e.IsLeftElement() {
+					continue
+				}
+
+				e.Price = lastPrice
+			}
 		}
 	}
 }
@@ -153,4 +197,28 @@ func (e Element) IsLeftElement() bool {
 	}
 
 	return false
+}
+
+// GetPriceFIFO is 先入先出法での月末仕掛品平均単価を返す
+func (c Cost) GetPriceFIFO() float64 {
+	for _, e := range c.Elements {
+		if e.Type == Input {
+			return c.InputCost / float64(e.Unit)
+		}
+	}
+
+	return 0.0
+}
+
+// GetPriceAVG is 平均法での月末仕掛品平均単価を返す
+func (c Cost) GetPriceAVG() float64 {
+	totalUnit := 0
+
+	for _, e := range c.Elements {
+		if e.IsLeftElement() {
+			totalUnit += e.Unit
+		}
+	}
+
+	return (c.FirstCost + c.InputCost) / float64(totalUnit)
 }
