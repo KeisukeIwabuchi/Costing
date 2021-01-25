@@ -166,3 +166,20 @@ func TestIsLeftElement(t *testing.T) {
 		}
 	}
 }
+
+func TestGetPriceFIFO(t *testing.T) {
+	input := Element{
+		Type: Input,
+		Unit: 1380,
+	}
+
+	var material Cost
+	material.Elements = append(material.Elements, input)
+	material.CMethod = FIFO
+	material.FirstCost = 206400
+	material.InputCost = 717600
+
+	actual := material.GetPriceFIFO()
+	expected := 520.0
+	assert.Equal(t, expected, actual)
+}
