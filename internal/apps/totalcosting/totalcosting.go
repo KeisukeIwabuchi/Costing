@@ -55,10 +55,11 @@ type Cost struct {
 
 // Box is 解く問題
 type Box struct {
-	Master         []Element
-	Costs          []Cost
-	ProductAvgCost float64
-	EOTMCost       float64
+	Master           []Element
+	Costs            []Cost
+	ProductTotalCost float64
+	ProductAvgCost   float64
+	EOTMTotalCost    float64
 }
 
 // Run is culcurate answer
@@ -118,6 +119,45 @@ func (b Box) Run() {
 
 				e.Price = lastPrice
 			}
+		}
+	}
+
+	// 月末仕掛品原価の計算
+	b.CalculationEOFMCost()
+
+	// 完成品原価の計算
+	b.CalculationProductCost()
+}
+
+// CalculationEOFMCost is 月末仕掛品原価の計算
+func (b Box) CalculationEOFMCost() {
+	b.EOTMTotalCost = 0
+
+	for _, c := range b.Costs {
+		for _, e := range c.Elements {
+			if e.Type == Last {
+				b.EOTMTotalCost += e.Price * float64(e.Unit)
+			}
+		}
+	}
+}
+
+// CalculationProductCost is 完成品原価の計算
+func (b Box) CalculationProductCost() {
+	b.ProductTotalCost = 0.0
+
+	for _, c := range b.Costs {
+		for _, e := range c.Elements {
+			if e.Type == Output {
+				b.ProductTotalCost += e.Price * float64(e.Unit)
+			}
+		}
+	}
+
+	for _, e := range b.Master {
+		if e.Type == Output {
+			b.ProductAvgCost = b.ProductTotalCost / float64(e.Unit)
+			break
 		}
 	}
 }
