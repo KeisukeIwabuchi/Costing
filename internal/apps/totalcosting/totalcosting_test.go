@@ -204,3 +204,33 @@ func TestGetPriceAVG(t *testing.T) {
 	expected := 550.0
 	assert.Equal(t, expected, actual)
 }
+
+func TestCalculationEOFMCost(t *testing.T) {
+	materialLast := Element{
+		Type:  Last,
+		Price: 550.0,
+		Unit:  240,
+	}
+	processingLast := Element{
+		Type:  Last,
+		Price: 750.0,
+		Unit:  72,
+	}
+
+	var material, processing Cost
+	material.Elements = append(material.Elements, materialLast)
+	processing.Elements = append(processing.Elements, processingLast)
+
+	var costs []Cost
+	costs = append(costs, material)
+	costs = append(costs, processing)
+
+	var box Box
+	box.Costs = append(box.Costs, material)
+	box.Costs = append(box.Costs, processing)
+	box.CalculationEOFMCost()
+
+	actual := box.EOTMTotalCost
+	expected := 186000.0
+	assert.Equal(t, expected, actual)
+}

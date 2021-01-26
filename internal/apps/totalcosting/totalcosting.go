@@ -130,8 +130,8 @@ func (b Box) Run() {
 }
 
 // CalculationEOFMCost is 月末仕掛品原価の計算
-func (b Box) CalculationEOFMCost() {
-	b.EOTMTotalCost = 0
+func (b *Box) CalculationEOFMCost() {
+	b.EOTMTotalCost = 0.0
 
 	for _, c := range b.Costs {
 		for _, e := range c.Elements {
@@ -143,7 +143,7 @@ func (b Box) CalculationEOFMCost() {
 }
 
 // CalculationProductCost is 完成品原価の計算
-func (b Box) CalculationProductCost() {
+func (b *Box) CalculationProductCost() {
 	b.ProductTotalCost = 0.0
 
 	for _, c := range b.Costs {
