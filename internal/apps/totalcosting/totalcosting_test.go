@@ -234,3 +234,38 @@ func TestCalculationEOFMCost(t *testing.T) {
 	expected := 186000.0
 	assert.Equal(t, expected, actual)
 }
+
+func TestCalculationProdutCost(t *testing.T) {
+	materialProduct := Element{
+		Type:  Output,
+		Price: 550.0,
+		Unit:  1440,
+	}
+	processingProduct := Element{
+		Type:  Output,
+		Price: 750.0,
+		Unit:  1440,
+	}
+
+	var material, processing Cost
+	material.Elements = append(material.Elements, materialProduct)
+	processing.Elements = append(processing.Elements, processingProduct)
+
+	var costs []Cost
+	costs = append(costs, material)
+	costs = append(costs, processing)
+
+	var box Box
+	box.Master = append(box.Master, materialProduct)
+	box.Costs = append(box.Costs, material)
+	box.Costs = append(box.Costs, processing)
+	box.CalculationProductCost()
+
+	actual := box.ProductTotalCost
+	expected := 1872000.0
+	assert.Equal(t, expected, actual)
+
+	actual = box.ProductAvgCost
+	expected = 1300.0
+	assert.Equal(t, expected, actual)
+}
