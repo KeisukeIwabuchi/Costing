@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/KeisukeIwabuchi/Costing/internal/apps/totalcosting"
 	gin "github.com/gin-gonic/gin"
 )
 
@@ -21,4 +22,7 @@ func main() {
 	})
 
 	router.Run()
+
+	var box totalcosting.Box
+	box.Run()
 }

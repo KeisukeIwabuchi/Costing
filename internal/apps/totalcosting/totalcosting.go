@@ -198,6 +198,17 @@ func (b *Box) CalculationProductCost() {
 
 // Run is culcurate answer
 func (b *Box) Run() {
+	// for i := 0; i < len(b.Master); i++ {
+	// 	var element = Element{
+	// 		Type:  Input,
+	// 		Price: 3.0,
+	// 	}
+
+	// 	for _, c := range b.Costs {
+	// 		c.Elements = append(c.Elements, element)
+	// 	}
+	// }
+
 	// 数量の計算
 	for _, cost := range b.Costs {
 		// 定点で投入
