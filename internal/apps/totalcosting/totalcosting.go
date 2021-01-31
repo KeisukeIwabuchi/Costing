@@ -164,36 +164,44 @@ type Box struct {
 }
 
 // CalculationEOFMCost is 月末仕掛品原価の計算
-func (b *Box) CalculationEOFMCost() {
-	b.EOTMTotalCost = 0.0
+func (b Box) CalculationEOFMCost() float64 {
+	total := 0.0
 
 	for _, c := range b.Costs {
 		for _, e := range c.Elements {
 			if e.Type == Last {
-				b.EOTMTotalCost += e.Price * float64(e.Unit)
+				total += e.Price * float64(e.Unit)
 			}
 		}
 	}
+
+	return total
 }
 
 // CalculationProductCost is 完成品原価の計算
-func (b *Box) CalculationProductCost() {
-	b.ProductTotalCost = 0.0
+func (b Box) CalculationProductCost() float64 {
+	total := 0.0
 
 	for _, c := range b.Costs {
 		for _, e := range c.Elements {
 			if e.Type == Output {
-				b.ProductTotalCost += e.Price * float64(e.Unit)
+				total += e.Price * float64(e.Unit)
 			}
 		}
 	}
 
+	return total
+}
+
+// CalculationProductAvgCost is 完成品単位原価の計算
+func (b Box) CalculationProductAvgCost() float64 {
 	for _, e := range b.Master {
 		if e.Type == Output {
-			b.ProductAvgCost = b.ProductTotalCost / float64(e.Unit)
-			break
+			return b.ProductTotalCost / float64(e.Unit)
 		}
 	}
+
+	return 0.0
 }
 
 // Run is culcurate answer
@@ -268,8 +276,11 @@ func (b *Box) Run() {
 	}
 
 	// 月末仕掛品原価の計算
-	b.CalculationEOFMCost()
+	b.EOTMTotalCost = b.CalculationEOFMCost()
 
 	// 完成品原価の計算
-	b.CalculationProductCost()
+	b.ProductTotalCost = b.CalculationProductCost()
+
+	// 完成品単位原価の計算
+	b.ProductAvgCost = b.CalculationProductAvgCost()
 }

@@ -179,7 +179,7 @@ func TestCalculationEOFMCost(t *testing.T) {
 	box.Costs = append(box.Costs, processing)
 	box.CalculationEOFMCost()
 
-	actual := box.EOTMTotalCost
+	actual := box.CalculationEOFMCost()
 	expected := 186000.0
 	assert.Equal(t, expected, actual)
 }
@@ -208,14 +208,40 @@ func TestCalculationProdutCost(t *testing.T) {
 	box.Master = append(box.Master, materialProduct)
 	box.Costs = append(box.Costs, material)
 	box.Costs = append(box.Costs, processing)
-	box.CalculationProductCost()
 
-	actual := box.ProductTotalCost
+	actual := box.CalculationProductCost()
 	expected := 1872000.0
 	assert.Equal(t, expected, actual)
+}
 
-	actual = box.ProductAvgCost
-	expected = 1300.0
+func TestCalculationProdutAvgCost(t *testing.T) {
+	materialProduct := Element{
+		Type:  Output,
+		Price: 550.0,
+		Unit:  1440,
+	}
+	processingProduct := Element{
+		Type:  Output,
+		Price: 750.0,
+		Unit:  1440,
+	}
+
+	var material, processing Cost
+	material.Elements = append(material.Elements, materialProduct)
+	processing.Elements = append(processing.Elements, processingProduct)
+
+	var costs []Cost
+	costs = append(costs, material)
+	costs = append(costs, processing)
+
+	var box Box
+	box.Master = append(box.Master, materialProduct)
+	box.Costs = append(box.Costs, material)
+	box.Costs = append(box.Costs, processing)
+	box.ProductTotalCost = box.CalculationProductCost()
+
+	actual := box.CalculationProductAvgCost()
+	expected := 1300.0
 	assert.Equal(t, expected, actual)
 }
 
@@ -263,7 +289,7 @@ func TestRun(t *testing.T) {
 
 	box.Run()
 
-	actual := len(box.Costs[0].Elements)
+	actual := box.EOTMTotalCost
 	expected := 4
 	// expected := 1300.0
 	assert.Equal(t, expected, actual)
