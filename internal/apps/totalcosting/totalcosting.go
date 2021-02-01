@@ -206,41 +206,30 @@ func (b Box) CalculationProductAvgCost() float64 {
 
 // Run is culcurate answer
 func (b *Box) Run() {
-	// for i := 0; i < len(b.Master); i++ {
-	// 	var element = Element{
-	// 		Type:  Input,
-	// 		Price: 3.0,
-	// 	}
-
-	// 	for _, c := range b.Costs {
-	// 		c.Elements = append(c.Elements, element)
-	// 	}
-	// }
-
 	// 数量の計算
-	for _, cost := range b.Costs {
+	for _, c := range b.Costs {
 		// 定点で投入
-		if !cost.InputOnAvg {
+		if !c.InputOnAvg {
 			// 投入量の計算
-			cost.CalulateInputUnit(b.Master)
+			c.CalulateInputUnit(b.Master)
 		}
 
 		// 平均的に投入
-		if cost.InputOnAvg {
+		if c.InputOnAvg {
 			// 完成品換算量を計算
-			cost.CalulateConversionUnit(b.Master)
+			c.CalulateConversionUnit(b.Master)
 		}
 	}
 
 	// 月末仕掛品原価の計算
-	for _, cost := range b.Costs {
+	for _, c := range b.Costs {
 		// 先入先出法
-		if cost.CMethod == FIFO {
-			lastPrice := cost.GetPriceFIFO()
+		if c.CMethod == FIFO {
+			lastPrice := c.GetPriceFIFO()
 			totalUnit := 0
 
 			// 完成品以外の平均単価を代入
-			for _, e := range cost.Elements {
+			for _, e := range c.Elements {
 				if e.IsLeftElement() || e.Type == Output {
 					continue
 				}
@@ -250,22 +239,22 @@ func (b *Box) Run() {
 			}
 
 			// 差額で完成品の平均単価を計算
-			for _, e := range cost.Elements {
+			for _, e := range c.Elements {
 				if e.Type != Output {
 					continue
 				}
 
-				totalCost := cost.FirstCost + cost.InputCost
+				totalCost := c.FirstCost + c.InputCost
 				outputCost := totalCost - lastPrice*float64(totalUnit)
 				e.Price = outputCost / float64(e.Unit)
 			}
 		}
 
 		// 平均法
-		if cost.CMethod == AVG {
-			lastPrice := cost.GetPriceAVG()
+		if c.CMethod == AVG {
+			lastPrice := c.GetPriceAVG()
 
-			for _, e := range cost.Elements {
+			for _, e := range c.Elements {
 				if e.IsLeftElement() {
 					continue
 				}
