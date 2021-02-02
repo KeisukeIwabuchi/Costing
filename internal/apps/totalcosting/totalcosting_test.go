@@ -278,21 +278,20 @@ func TestRun(t *testing.T) {
 	material.CMethod = AVG
 	material.FirstCost = 206400
 	material.InputCost = 717600
-	material.Elements = make([]Element, 4)
 
 	processing.InputOnAvg = true
 	processing.CMethod = AVG
 	processing.FirstCost = 161640
 	processing.InputCost = 972360
-	processing.Elements = make([]Element, 4)
 
 	box.Costs = append(box.Costs, material)
 	box.Costs = append(box.Costs, processing)
 
-	box.Run()
+	Run(&box)
 
-	actual := box.Costs[0].Elements[0].Price
-	expected := 4
+	// actual := result
+	actual := box.Costs[0].Elements[2].Unit
+	expected := 300
 	assert.Equal(t, expected, actual)
 
 	// actual := box.ProductAvgCost

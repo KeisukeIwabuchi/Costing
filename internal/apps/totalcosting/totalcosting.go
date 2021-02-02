@@ -68,7 +68,7 @@ type Cost struct {
 }
 
 // CalulateInputUnit is 投入点と進捗度を比較して、進捗度が投入点以上なら投入
-func (c Cost) CalulateInputUnit(master []Element) {
+func (c *Cost) CalulateInputUnit(master []Element) {
 	for _, m := range master {
 		var element Element
 
@@ -91,7 +91,7 @@ func (c Cost) CalulateInputUnit(master []Element) {
 }
 
 // CalulateConversionUnit is 完成品換算量を計算
-func (c Cost) CalulateConversionUnit(master []Element) {
+func (c *Cost) CalulateConversionUnit(master []Element) {
 	var sumLeft, sumRight int
 
 	for _, m := range master {
@@ -204,11 +204,36 @@ func (b Box) CalculationProductAvgCost() float64 {
 	return 0.0
 }
 
+// Add is test
+func Add(e *[]Element, timing float64, master []Element) Element {
+	for _, m := range master {
+		var element Element
+
+		element.Type = m.Type
+
+		if element.Type == Output {
+			element.Progress = 1.0
+		} else {
+			element.Progress = m.Progress
+		}
+
+		if m.Progress < timing {
+			element.Unit = 0
+		} else {
+			element.Unit = m.Unit
+		}
+
+		*e = append(*e, element)
+		return element
+	}
+	return Element{}
+}
+
 // Run is culcurate answer
-func (b *Box) Run() {
+func Run(b *Box) {
 	// 数量の計算
 	for _, c := range b.Costs {
-		// 定点で投入
+		// // 定点で投入
 		if !c.InputOnAvg {
 			// 投入量の計算
 			c.CalulateInputUnit(b.Master)
@@ -221,55 +246,55 @@ func (b *Box) Run() {
 		}
 	}
 
-	// 月末仕掛品原価の計算
-	for _, c := range b.Costs {
-		// 先入先出法
-		if c.CMethod == FIFO {
-			lastPrice := c.GetPriceFIFO()
-			totalUnit := 0
+	// // 月末仕掛品原価の計算
+	// for _, c := range b.Costs {
+	// 	// 先入先出法
+	// 	if c.CMethod == FIFO {
+	// 		lastPrice := c.GetPriceFIFO()
+	// 		totalUnit := 0
 
-			// 完成品以外の平均単価を代入
-			for _, e := range c.Elements {
-				if e.IsLeftElement() || e.Type == Output {
-					continue
-				}
+	// 		// 完成品以外の平均単価を代入
+	// 		for _, e := range c.Elements {
+	// 			if e.IsLeftElement() || e.Type == Output {
+	// 				continue
+	// 			}
 
-				e.Price = lastPrice
-				totalUnit += e.Unit
-			}
+	// 			e.Price = lastPrice
+	// 			totalUnit += e.Unit
+	// 		}
 
-			// 差額で完成品の平均単価を計算
-			for _, e := range c.Elements {
-				if e.Type != Output {
-					continue
-				}
+	// 		// 差額で完成品の平均単価を計算
+	// 		for _, e := range c.Elements {
+	// 			if e.Type != Output {
+	// 				continue
+	// 			}
 
-				totalCost := c.FirstCost + c.InputCost
-				outputCost := totalCost - lastPrice*float64(totalUnit)
-				e.Price = outputCost / float64(e.Unit)
-			}
-		}
+	// 			totalCost := c.FirstCost + c.InputCost
+	// 			outputCost := totalCost - lastPrice*float64(totalUnit)
+	// 			e.Price = outputCost / float64(e.Unit)
+	// 		}
+	// 	}
 
-		// 平均法
-		if c.CMethod == AVG {
-			lastPrice := c.GetPriceAVG()
+	// 	// 平均法
+	// 	if c.CMethod == AVG {
+	// 		lastPrice := c.GetPriceAVG()
 
-			for _, e := range c.Elements {
-				if e.IsLeftElement() {
-					continue
-				}
+	// 		for _, e := range c.Elements {
+	// 			if e.IsLeftElement() {
+	// 				continue
+	// 			}
 
-				e.Price = lastPrice
-			}
-		}
-	}
+	// 			e.Price = lastPrice
+	// 		}
+	// 	}
+	// }
 
-	// 月末仕掛品原価の計算
-	b.EOTMTotalCost = b.CalculationEOFMCost()
+	// // 月末仕掛品原価の計算
+	// b.EOTMTotalCost = b.CalculationEOFMCost()
 
-	// 完成品原価の計算
-	b.ProductTotalCost = b.CalculationProductCost()
+	// // 完成品原価の計算
+	// b.ProductTotalCost = b.CalculationProductCost()
 
-	// 完成品単位原価の計算
-	b.ProductAvgCost = b.CalculationProductAvgCost()
+	// // 完成品単位原価の計算
+	// b.ProductAvgCost = b.CalculationProductAvgCost()
 }
