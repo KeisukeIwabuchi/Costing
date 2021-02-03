@@ -69,7 +69,9 @@ type Cost struct {
 
 // CalulateInputUnit is 投入点と進捗度を比較して、進捗度が投入点以上なら投入
 func (c *Cost) CalulateInputUnit(master []Element) {
-	for _, m := range master {
+	c.Elements = make([]Element, len(master))
+
+	for i, m := range master {
 		var element Element
 
 		element.Type = m.Type
@@ -86,21 +88,22 @@ func (c *Cost) CalulateInputUnit(master []Element) {
 			element.Unit = m.Unit
 		}
 
-		c.Elements = append(c.Elements, element)
+		c.Elements[i] = element
 	}
 }
 
 // CalulateConversionUnit is 完成品換算量を計算
 func (c *Cost) CalulateConversionUnit(master []Element) {
 	var sumLeft, sumRight int
+	c.Elements = make([]Element, len(master))
 
-	for _, m := range master {
+	for i, m := range master {
 		var element Element
 
 		element.Type = m.Type
 
 		if element.Type == Input {
-			c.Elements = append(c.Elements, element)
+			c.Elements[i] = element
 			continue
 		}
 
@@ -112,7 +115,7 @@ func (c *Cost) CalulateConversionUnit(master []Element) {
 
 		element.Unit = int(float64(m.Unit) * m.Progress)
 
-		c.Elements = append(c.Elements, element)
+		c.Elements[i] = element
 
 		// 投入量計算のための処理
 		// Unitの計算後にやること
@@ -230,19 +233,42 @@ func Add(e *[]Element, timing float64, master []Element) Element {
 }
 
 // Run is culcurate answer
-func Run(b *Box) {
+func (b *Box) Run() {
 	// 数量の計算
-	for _, c := range b.Costs {
+	cCount := len(b.Costs)
+	for i := 0; i < cCount; i++ {
 		// // 定点で投入
-		if !c.InputOnAvg {
+		if !b.Costs[i].InputOnAvg {
 			// 投入量の計算
-			c.CalulateInputUnit(b.Master)
+			b.Costs[i].CalulateInputUnit(b.Master)
+
+			// n := len(b.Master)
+			// b.Costs[i].Elements = make([]Element, 10)
+			// for j := 0; j < n; j++ {
+			// 	var element Element
+
+			// 	element.Type = b.Master[j].Type
+
+			// 	if element.Type == Output {
+			// 		element.Progress = 1.0
+			// 	} else {
+			// 		element.Progress = b.Master[j].Progress
+			// 	}
+
+			// 	if b.Master[j].Progress < b.Costs[i].InputTiming {
+			// 		element.Unit = 0
+			// 	} else {
+			// 		element.Unit = b.Master[j].Unit
+			// 	}
+
+			// 	b.Costs[i].Elements[j] = element
+			// }
 		}
 
 		// 平均的に投入
-		if c.InputOnAvg {
+		if b.Costs[i].InputOnAvg {
 			// 完成品換算量を計算
-			c.CalulateConversionUnit(b.Master)
+			b.Costs[i].CalulateConversionUnit(b.Master)
 		}
 	}
 

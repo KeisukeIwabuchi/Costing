@@ -61,7 +61,7 @@ func TestCalulateInputUnit(t *testing.T) {
 
 	material.CalulateInputUnit(master)
 
-	expected := []float64{
+	expected := []int{
 		300,
 		1380,
 		1440,
@@ -104,7 +104,7 @@ func TestCalulateConversionUnit(t *testing.T) {
 
 	proccesing.CalulateConversionUnit(master)
 
-	expected := []float64{
+	expected := []int{
 		180,
 		1332,
 		1440,
@@ -287,9 +287,9 @@ func TestRun(t *testing.T) {
 	box.Costs = append(box.Costs, material)
 	box.Costs = append(box.Costs, processing)
 
-	Run(&box)
+	box.Run()
 
-	// actual := result
+	// actual := len(box.Costs[0].Elements)
 	actual := box.Costs[0].Elements[2].Unit
 	expected := 300
 	assert.Equal(t, expected, actual)
