@@ -114,6 +114,28 @@ func TestCalulateConversionUnit(t *testing.T) {
 		actual := e.Unit
 		assert.Equal(t, expected[i], actual)
 	}
+
+	expectedType := []ElementType{
+		First,
+		Input,
+		Output,
+		Last,
+	}
+	for i, e := range proccesing.Elements {
+		actual := e.Type
+		assert.Equal(t, expectedType[i], actual)
+	}
+
+	expectedProgress := []float64{
+		0.6,
+		0.0,
+		1.0,
+		0.3,
+	}
+	for i, e := range proccesing.Elements {
+		actual := e.Progress
+		assert.Equal(t, expectedProgress[i], actual)
+	}
 }
 
 func TestGetPriceFIFO(t *testing.T) {

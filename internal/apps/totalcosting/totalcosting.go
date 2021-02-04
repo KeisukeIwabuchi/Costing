@@ -94,7 +94,8 @@ func (c *Cost) CalulateInputUnit(master []Element) {
 
 // CalulateConversionUnit is 完成品換算量を計算
 func (c *Cost) CalulateConversionUnit(master []Element) {
-	var sumLeft, sumRight int
+	sumLeft := 0
+	sumRight := 0
 	c.Elements = make([]Element, len(master))
 
 	for i, m := range master {
@@ -109,11 +110,11 @@ func (c *Cost) CalulateConversionUnit(master []Element) {
 
 		if element.Type == Output {
 			element.Progress = 1.0
+			element.Unit = m.Unit
 		} else {
 			element.Progress = m.Progress
+			element.Unit = int(float64(m.Unit) * m.Progress)
 		}
-
-		element.Unit = int(float64(m.Unit) * m.Progress)
 
 		c.Elements[i] = element
 
@@ -126,9 +127,9 @@ func (c *Cost) CalulateConversionUnit(master []Element) {
 		}
 	}
 
-	for _, e := range c.Elements {
-		if e.Type == Input {
-			e.Unit = sumRight - sumLeft
+	for i := 0; i < len(c.Elements); i++ {
+		if c.Elements[i].Type == Input {
+			c.Elements[i].Unit = sumRight - sumLeft
 		}
 	}
 }
