@@ -311,12 +311,7 @@ func TestRun(t *testing.T) {
 
 	box.Run()
 
-	// actual := len(box.Costs[0].Elements)
-	actual := box.Costs[0].Elements[2].Unit
-	expected := 300
+	actual := box.ProductAvgCost
+	expected := 1300.0
 	assert.Equal(t, expected, actual)
-
-	// actual := box.ProductAvgCost
-	// expected := 1300.0
-	// assert.Equal(t, expected, actual)
 }

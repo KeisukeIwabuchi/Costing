@@ -273,55 +273,55 @@ func (b *Box) Run() {
 		}
 	}
 
-	// // 月末仕掛品原価の計算
-	// for _, c := range b.Costs {
-	// 	// 先入先出法
-	// 	if c.CMethod == FIFO {
-	// 		lastPrice := c.GetPriceFIFO()
-	// 		totalUnit := 0
+	// 月末仕掛品原価の計算
+	for _, c := range b.Costs {
+		// 先入先出法
+		if c.CMethod == FIFO {
+			lastPrice := c.GetPriceFIFO()
+			totalUnit := 0
 
-	// 		// 完成品以外の平均単価を代入
-	// 		for _, e := range c.Elements {
-	// 			if e.IsLeftElement() || e.Type == Output {
-	// 				continue
-	// 			}
+			// 完成品以外の平均単価を代入
+			for i := 0; i < len(c.Elements); i++ {
+				if c.Elements[i].IsLeftElement() || c.Elements[i].Type == Output {
+					continue
+				}
 
-	// 			e.Price = lastPrice
-	// 			totalUnit += e.Unit
-	// 		}
+				c.Elements[i].Price = lastPrice
+				totalUnit += c.Elements[i].Unit
+			}
 
-	// 		// 差額で完成品の平均単価を計算
-	// 		for _, e := range c.Elements {
-	// 			if e.Type != Output {
-	// 				continue
-	// 			}
+			// 差額で完成品の平均単価を計算
+			for i := 0; i < len(c.Elements); i++ {
+				if c.Elements[i].Type != Output {
+					continue
+				}
 
-	// 			totalCost := c.FirstCost + c.InputCost
-	// 			outputCost := totalCost - lastPrice*float64(totalUnit)
-	// 			e.Price = outputCost / float64(e.Unit)
-	// 		}
-	// 	}
+				totalCost := c.FirstCost + c.InputCost
+				outputCost := totalCost - lastPrice*float64(totalUnit)
+				c.Elements[i].Price = outputCost / float64(c.Elements[i].Unit)
+			}
+		}
 
-	// 	// 平均法
-	// 	if c.CMethod == AVG {
-	// 		lastPrice := c.GetPriceAVG()
+		// 平均法
+		if c.CMethod == AVG {
+			lastPrice := c.GetPriceAVG()
 
-	// 		for _, e := range c.Elements {
-	// 			if e.IsLeftElement() {
-	// 				continue
-	// 			}
+			for i := 0; i < len(c.Elements); i++ {
+				if c.Elements[i].IsLeftElement() {
+					continue
+				}
 
-	// 			e.Price = lastPrice
-	// 		}
-	// 	}
-	// }
+				c.Elements[i].Price = lastPrice
+			}
+		}
+	}
 
-	// // 月末仕掛品原価の計算
-	// b.EOTMTotalCost = b.CalculationEOFMCost()
+	// 月末仕掛品原価の計算
+	b.EOTMTotalCost = b.CalculationEOFMCost()
 
-	// // 完成品原価の計算
-	// b.ProductTotalCost = b.CalculationProductCost()
+	// 完成品原価の計算
+	b.ProductTotalCost = b.CalculationProductCost()
 
-	// // 完成品単位原価の計算
-	// b.ProductAvgCost = b.CalculationProductAvgCost()
+	// 完成品単位原価の計算
+	b.ProductAvgCost = b.CalculationProductAvgCost()
 }
