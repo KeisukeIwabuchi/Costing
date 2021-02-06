@@ -242,28 +242,6 @@ func (b *Box) Run() {
 		if !b.Costs[i].InputOnAvg {
 			// 投入量の計算
 			b.Costs[i].CalulateInputUnit(b.Master)
-
-			// n := len(b.Master)
-			// b.Costs[i].Elements = make([]Element, 10)
-			// for j := 0; j < n; j++ {
-			// 	var element Element
-
-			// 	element.Type = b.Master[j].Type
-
-			// 	if element.Type == Output {
-			// 		element.Progress = 1.0
-			// 	} else {
-			// 		element.Progress = b.Master[j].Progress
-			// 	}
-
-			// 	if b.Master[j].Progress < b.Costs[i].InputTiming {
-			// 		element.Unit = 0
-			// 	} else {
-			// 		element.Unit = b.Master[j].Unit
-			// 	}
-
-			// 	b.Costs[i].Elements[j] = element
-			// }
 		}
 
 		// 平均的に投入
