@@ -38,6 +38,12 @@ func (e Element) IsLeftElement() bool {
 	return false
 }
 
+// IsBear is 仕損を負担するかの判定
+// true: 負担する, false: 負担しない
+func (e Element) IsBear(progress float64) bool {
+	return e.Progress >= progress
+}
+
 // CalculationMethod is 月末仕掛品の計算方法
 type CalculationMethod int
 
@@ -302,4 +308,18 @@ func (b *Box) Run() {
 
 	// 完成品単位原価の計算
 	b.ProductAvgCost = b.CalculationProductAvgCost()
+}
+
+// Index is elementsの中からsearchで指定したElementTypeに一致する
+// Elementを探してそのindexを返す
+// 見つからなければ-1を返す
+// searchに一致するものが複数あっても最初の1つしか返さないので注意
+func Index(search ElementType, elements []Element) int {
+	for i := 0; i < len(elements); i++ {
+		if elements[i].Type == search {
+			return i
+		}
+	}
+
+	return -1
 }
