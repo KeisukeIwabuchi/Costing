@@ -38,6 +38,17 @@ func (e Element) IsLeftElement() bool {
 	return false
 }
 
+// Cost is PriceとUnitから費用を計算
+func (e Element) Cost() float64 {
+	return e.Price * float64(e.Unit)
+}
+
+// AddCoust is costで指定された分の費用を加えたPriceを計算する
+func (e *Element) AddCost(cost float64) {
+	totalCost := e.Price * float64(e.Unit) + cost
+	e.Price = totalCost / float64(e.Unit)
+}
+
 // IsBear is 仕損を負担するかの判定
 // true: 負担する, false: 負担しない
 func (e Element) IsBear(progress float64) bool {
@@ -257,6 +268,20 @@ func (b *Box) Run() {
 		}
 	}
 
+	// 正常仕損の扱い
+	for i := 0; i < cCount; i++ {
+		// 度外視法
+		if b.Costs[i].DMethod == Neglecting {
+			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
+
+		}
+
+		// 非度外視法の場合は
+		if b.Costs[i].DMethod == NonNeglecting {
+
+		}
+	}
+
 	// 月末仕掛品原価の計算
 	for _, c := range b.Costs {
 		// 先入先出法
@@ -296,6 +321,46 @@ func (b *Box) Run() {
 				}
 
 				c.Elements[i].Price = lastPrice
+			}
+		}
+	}
+
+	// 正常仕損の扱い
+	for i := 0; i < cCount; i++ {
+		// 度外視法
+		if b.Costs[i].DMethod == Neglecting {
+			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
+
+		}
+
+		// 非度外視法の場合は
+		if b.Costs[i].DMethod == NonNeglecting {
+			isBoth := false
+			normalDefectIndex := Index(NormalDefect, b.Costs[i].Elements)
+			normalDefectElement := Element{}
+			if normalDefectIndex >= 0 {
+				normalDefectElement = b.Costs[i].Elements[normalDefectIndex]
+
+				lastIndex := Index(Last, b.Costs[i].Elements)
+				lastElement := Element{}
+				lastElement = b.Costs[i].Elements[lastIndex]
+				if lastIndex >= 0 {
+					lastElement = b.Costs[i].Elements[lastIndex]
+				}
+
+				if lastElement.Progress >= normalDefectElement.Progress {
+					isBoth = true
+				}
+
+				if isBoth {
+					// 両者負担
+				} else {
+					// 完成品負担
+					outputIndex := Index(Output, b.Costs[i].Elements)
+					b.Costs[i].Elements[outputIndex].AddCost(
+						normalDefectElement.Cost()
+					)
+				}
 			}
 		}
 	}
