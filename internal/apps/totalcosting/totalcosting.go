@@ -43,9 +43,9 @@ func (e Element) Cost() float64 {
 	return e.Price * float64(e.Unit)
 }
 
-// AddCoust is costで指定された分の費用を加えたPriceを計算する
+// AddCost is costで指定された分の費用を加えたPriceを計算する
 func (e *Element) AddCost(cost float64) {
-	totalCost := e.Price * float64(e.Unit) + cost
+	totalCost := e.Price*float64(e.Unit) + cost
 	e.Price = totalCost / float64(e.Unit)
 }
 
@@ -357,9 +357,7 @@ func (b *Box) Run() {
 				} else {
 					// 完成品負担
 					outputIndex := Index(Output, b.Costs[i].Elements)
-					b.Costs[i].Elements[outputIndex].AddCost(
-						normalDefectElement.Cost()
-					)
+					b.Costs[i].Elements[outputIndex].AddCost(normalDefectElement.Cost())
 				}
 			}
 		}

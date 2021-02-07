@@ -29,6 +29,43 @@ func TestIsLeftElement(t *testing.T) {
 	}
 }
 
+func TestCost(t *testing.T) {
+	testCases := []struct {
+		E      Element
+		Result float64
+	}{
+		{Element{Price: 100.0, Unit: 100}, 10000.0},
+		{Element{Price: 100.0, Unit: 0}, 0.0},
+		{Element{Price: 0.0, Unit: 100}, 0.0},
+	}
+
+	for _, testCase := range testCases {
+		result := testCase.E.Cost()
+		if result != testCase.Result {
+			t.Errorf("Invalid result. testCase:%#v, actual:%f", testCase, result)
+		}
+	}
+}
+
+func TestAddCost(t *testing.T) {
+	testCases := []struct {
+		E        Element
+		Argument float64
+		Result   float64
+	}{
+		{Element{Price: 100.0, Unit: 100}, 10000.0, 200.0},
+		{Element{Price: 0.0, Unit: 100}, 10000.0, 100.0},
+	}
+
+	for _, testCase := range testCases {
+		testCase.E.AddCost(testCase.Argument)
+		result := testCase.E.Price
+		if result != testCase.Result {
+			t.Errorf("Invalid result. testCase:%#v, actual:%f", testCase, result)
+		}
+	}
+}
+
 func TestCalulateInputUnit(t *testing.T) {
 	first := Element{
 		Type:     First,
