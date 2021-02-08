@@ -66,6 +66,25 @@ func TestAddCost(t *testing.T) {
 	}
 }
 
+func TestIsNear(t *testing.T) {
+	testCases := []struct {
+		E        Element
+		Argument float64
+		Result   bool
+	}{
+		{Element{Progress: 0.5}, 1.0, false},
+		{Element{Progress: 0.5}, 0.5, true},
+		{Element{Progress: 0.5}, 0.2, true},
+	}
+
+	for _, testCase := range testCases {
+		result := testCase.E.IsBear(testCase.Argument)
+		if result != testCase.Result {
+			t.Errorf("Invalid result. testCase:%#v, actual:%t", testCase, result)
+		}
+	}
+}
+
 func TestCalulateInputUnit(t *testing.T) {
 	first := Element{
 		Type:     First,
