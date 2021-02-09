@@ -386,3 +386,27 @@ func Index(search ElementType, elements []Element) int {
 
 	return -1
 }
+
+// GetDivideCost is 仕損の負担関係に応じた費用を返す
+func GetDivideCost(elements []Element, master []Element) []Element {
+	result := []Element{}
+
+	return result
+}
+
+// GetCountWithElementType is elementsの中にあるsearchに一致する要素の数を返す
+func GetCountWithElementType(elements []Element, search []ElementType) int {
+	count := 0
+	elementsCount := len(elements)
+	searchCount := len(search)
+
+	for i := 0; i < elementsCount; i++ {
+		for j := 0; j < searchCount; j++ {
+			if elements[i].Type == search[j] {
+				count++
+			}
+		}
+	}
+
+	return count
+}

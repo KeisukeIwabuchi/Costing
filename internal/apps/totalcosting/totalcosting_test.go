@@ -66,7 +66,7 @@ func TestAddCost(t *testing.T) {
 	}
 }
 
-func TestIsNear(t *testing.T) {
+func TestIsBear(t *testing.T) {
 	testCases := []struct {
 		E        Element
 		Argument float64
