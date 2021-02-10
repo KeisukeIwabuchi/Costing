@@ -22,6 +22,7 @@ type Element struct {
 	Price    float64     // 単価
 	Unit     int         // 数量
 	Progress float64     // 加工進捗度
+	IsBurden bool        // 正常仕損の負担
 }
 
 // IsLeftElement is ElementTypeがBox図左側の要素かを確認する
@@ -225,31 +226,6 @@ func (b Box) CalculationProductAvgCost() float64 {
 	return 0.0
 }
 
-// Add is test
-func Add(e *[]Element, timing float64, master []Element) Element {
-	for _, m := range master {
-		var element Element
-
-		element.Type = m.Type
-
-		if element.Type == Output {
-			element.Progress = 1.0
-		} else {
-			element.Progress = m.Progress
-		}
-
-		if m.Progress < timing {
-			element.Unit = 0
-		} else {
-			element.Unit = m.Unit
-		}
-
-		*e = append(*e, element)
-		return element
-	}
-	return Element{}
-}
-
 // Run is culcurate answer
 func (b *Box) Run() {
 	// 数量の計算
@@ -270,10 +246,19 @@ func (b *Box) Run() {
 
 	// 正常仕損の扱い
 	for i := 0; i < cCount; i++ {
+		normalDefectProgress := GetNormalDefectProgress(b.Costs[i].Elements)
+
 		// 度外視法
 		if b.Costs[i].DMethod == Neglecting {
 			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
-
+			for j := 0; j < len(b.Costs[i].Elements); j++ {
+				if b.Costs[i].Elements[j].Progress > normalDefectProgress {
+					if b.Costs[i].Elements[j].Type == Output ||
+						b.Costs[i].Elements[j].Type == Last {
+						b.Costs[i].Elements[j].IsBurden = true
+					}
+				}
+			}
 		}
 
 		// 非度外視法の場合は
@@ -387,11 +372,15 @@ func Index(search ElementType, elements []Element) int {
 	return -1
 }
 
-// GetDivideCost is 仕損の負担関係に応じた費用を返す
-func GetDivideCost(elements []Element, master []Element) []Element {
-	result := []Element{}
+// GetNormalDefectProgress is 正常仕損の発生点を返す
+func GetNormalDefectProgress(elements []Element) float64 {
+	for i := 0; i < len(elements); i++ {
+		if elements[i].Type == NormalDefect {
+			return elements[i].Progress
+		}
+	}
 
-	return result
+	return -1.0
 }
 
 // GetCountWithElementType is elementsの中にあるsearchに一致する要素の数を返す
