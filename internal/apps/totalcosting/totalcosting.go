@@ -252,12 +252,11 @@ func (b *Box) Run() {
 		if b.Costs[i].DMethod == Neglecting {
 			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
 			for j := 0; j < len(b.Costs[i].Elements); j++ {
-				if b.Costs[i].Elements[j].Progress > normalDefectProgress {
-					if b.Costs[i].Elements[j].Type == Output ||
-						b.Costs[i].Elements[j].Type == Last {
-						b.Costs[i].Elements[j].IsBurden = true
-					}
+				if b.Costs[i].Elements[j].Type != Output && b.Costs[i].Elements[j].Type != Last {
+					continue
 				}
+				value := b.Costs[i].Elements[j].Progress > normalDefectProgress
+				b.Costs[i].Elements[j].IsBurden = value
 			}
 		}
 
