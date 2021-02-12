@@ -22,7 +22,7 @@ type Element struct {
 	Price    float64     // 単価
 	Unit     int         // 数量
 	Progress float64     // 加工進捗度
-	IsBurden bool        // 正常仕損の負担
+	NDBurden int         // 正常仕損の負担量
 }
 
 // IsLeftElement is ElementTypeがBox図左側の要素かを確認する
@@ -176,6 +176,25 @@ func (c Cost) GetPriceAVG() float64 {
 	return (c.FirstCost + c.InputCost) / float64(totalUnit)
 }
 
+// GetFIFOOutputBurder is 正常仕損度外視法, 先入先出法の場合の完成品負担量を返す
+func (c Cost) GetFIFOOutputBurder() int {
+	unit := 0
+
+	for _, e := range c.Elements {
+		if e.Type == Input {
+			unit += e.Unit
+		}
+		if e.Type == Last {
+			unit -= e.Unit
+		}
+		if e.Type == NormalDefect {
+			unit -= e.Unit
+		}
+	}
+
+	return unit
+}
+
 // Box is 解く問題
 type Box struct {
 	Master           []Element
@@ -255,14 +274,47 @@ func (b *Box) Run() {
 				if b.Costs[i].Elements[j].Type != Output && b.Costs[i].Elements[j].Type != Last {
 					continue
 				}
-				value := b.Costs[i].Elements[j].Progress > normalDefectProgress
-				b.Costs[i].Elements[j].IsBurden = value
+
+				if b.Costs[i].Elements[j].Progress > normalDefectProgress {
+					// 正常仕損発生点を超えていれば負担
+					b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
+				} else {
+					b.Costs[i].Elements[j].NDBurden = 0
+				}
 			}
 		}
 
-		// 非度外視法の場合は
-		if b.Costs[i].DMethod == NonNeglecting {
+		// 非度外視法
+		if b.Costs[i].DMethod == Neglecting {
+			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
+			for j := 0; j < len(b.Costs[i].Elements); j++ {
+				elementType := b.Costs[i].Elements[j].Type
+				if elementType != Output && elementType != Last {
+					continue
+				}
 
+				if b.Costs[i].Elements[j].Progress > normalDefectProgress {
+					// 正常仕損発生点を超えていれば負担
+					if b.Costs[i].CMethod == FIFO {
+						// 先入先出法では完成品の負担量の計算に注意
+						if elementType == Output {
+							// 投入量から月末仕掛品量と正常仕損量を差し引いたのが
+							// 完成品の負担量
+							b.Costs[i].Elements[j].NDBurden = b.Costs[i].GetFIFOOutputBurder()
+						}
+						if elementType == Last {
+							b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
+						}
+					}
+					if b.Costs[i].CMethod == AVG {
+						// 平均法では負担量=仕掛品量
+						b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
+					}
+				} else {
+					// 正常仕損発生点を超えていないので負担しない
+					b.Costs[i].Elements[j].NDBurden = 0
+				}
+			}
 		}
 	}
 
@@ -319,31 +371,7 @@ func (b *Box) Run() {
 
 		// 非度外視法の場合は
 		if b.Costs[i].DMethod == NonNeglecting {
-			isBoth := false
-			normalDefectIndex := Index(NormalDefect, b.Costs[i].Elements)
-			normalDefectElement := Element{}
-			if normalDefectIndex >= 0 {
-				normalDefectElement = b.Costs[i].Elements[normalDefectIndex]
 
-				lastIndex := Index(Last, b.Costs[i].Elements)
-				lastElement := Element{}
-				lastElement = b.Costs[i].Elements[lastIndex]
-				if lastIndex >= 0 {
-					lastElement = b.Costs[i].Elements[lastIndex]
-				}
-
-				if lastElement.Progress >= normalDefectElement.Progress {
-					isBoth = true
-				}
-
-				if isBoth {
-					// 両者負担
-				} else {
-					// 完成品負担
-					outputIndex := Index(Output, b.Costs[i].Elements)
-					b.Costs[i].Elements[outputIndex].AddCost(normalDefectElement.Cost())
-				}
-			}
 		}
 	}
 
