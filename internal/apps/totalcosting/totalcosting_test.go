@@ -232,6 +232,40 @@ func TestGetPriceAVG(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestGetFIFOOutputBurder(t *testing.T) {
+	first := Element{
+		Type: First,
+		Unit: 300,
+	}
+	input := Element{
+		Type: Input,
+		Unit: 1380,
+	}
+	output := Element{
+		Type: Output,
+		Unit: 1200,
+	}
+	normalDefect := Element{
+		Type: NormalDefect,
+		Unit: 240,
+	}
+	last := Element{
+		Type: Last,
+		Unit: 240,
+	}
+
+	var material Cost
+	material.Elements = append(material.Elements, first)
+	material.Elements = append(material.Elements, input)
+	material.Elements = append(material.Elements, output)
+	material.Elements = append(material.Elements, normalDefect)
+	material.Elements = append(material.Elements, last)
+
+	actual := material.GetFIFOOutputBurder()
+	expected := 900
+	assert.Equal(t, expected, actual)
+}
+
 func TestCalculationEOFMCost(t *testing.T) {
 	materialLast := Element{
 		Type:  Last,
