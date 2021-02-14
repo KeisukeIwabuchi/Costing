@@ -195,6 +195,17 @@ func (c Cost) GetFIFOOutputBurder() int {
 	return unit
 }
 
+// GetNormalDefectUnit is 正常仕損の数量を返す
+func (c Cost) GetNormalDefectUnit() int {
+	for _, e := range c.Elements {
+		if e.Type == NormalDefect {
+			return e.Unit
+		}
+	}
+
+	return 0
+}
+
 // Box is 解く問題
 type Box struct {
 	Master           []Element
@@ -271,13 +282,19 @@ func (b *Box) Run() {
 		if b.Costs[i].DMethod == Neglecting {
 			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
 			for j := 0; j < len(b.Costs[i].Elements); j++ {
-				if b.Costs[i].Elements[j].Type != Output && b.Costs[i].Elements[j].Type != Last {
+				elementType := b.Costs[i].Elements[j].Type
+				if elementType != Output && elementType != Last {
 					continue
 				}
 
 				if b.Costs[i].Elements[j].Progress > normalDefectProgress {
-					// 正常仕損発生点を超えていれば負担
+					// 正常仕損発生点を超えているので負担
 					b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
+
+					// 投入量も調整
+					if elementType == Input {
+
+					}
 				} else {
 					b.Costs[i].Elements[j].NDBurden = 0
 				}
@@ -289,12 +306,13 @@ func (b *Box) Run() {
 			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
 			for j := 0; j < len(b.Costs[i].Elements); j++ {
 				elementType := b.Costs[i].Elements[j].Type
+
 				if elementType != Output && elementType != Last {
 					continue
 				}
 
 				if b.Costs[i].Elements[j].Progress > normalDefectProgress {
-					// 正常仕損発生点を超えていれば負担
+					// 正常仕損発生点を超えているので負担
 					if b.Costs[i].CMethod == FIFO {
 						// 先入先出法では完成品の負担量の計算に注意
 						if elementType == Output {
@@ -311,8 +329,13 @@ func (b *Box) Run() {
 						b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
 					}
 				} else {
-					// 正常仕損発生点を超えていないので負担しない
-					b.Costs[i].Elements[j].NDBurden = 0
+					if elementType == Output {
+						// 完成品が全部負担
+						b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
+					} else {
+						// 正常仕損発生点を超えていないので負担しない
+						b.Costs[i].Elements[j].NDBurden = 0
+					}
 				}
 			}
 		}
