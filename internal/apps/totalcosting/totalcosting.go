@@ -283,20 +283,35 @@ func (b *Box) Run() {
 			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
 			for j := 0; j < len(b.Costs[i].Elements); j++ {
 				elementType := b.Costs[i].Elements[j].Type
-				if elementType != Output && elementType != Last {
-					continue
+
+				// 完成品負担割合の計算
+				if elementType == Output {
+					// 先入先出法の場合
+					if b.Costs[i].CMethod == FIFO {
+						b.Costs[i].Elements[j].NDBurden = b.Costs[i].GetFIFOOutputBurder()
+					}
+
+					// 平均法の場合
+					if b.Costs[i].CMethod == AVG {
+						b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
+					}
 				}
 
-				if b.Costs[i].Elements[j].Progress > normalDefectProgress {
-					// 正常仕損発生点を超えているので負担
-					b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
+				// 月末仕掛品負担割合の計算
+				if elementType != Last {
+					if b.Costs[i].Elements[j].Progress > normalDefectProgress {
+						// 正常仕損発生点を超えているので負担
+						b.Costs[i].Elements[j].NDBurden = b.Costs[i].Elements[j].Unit
 
-					// 投入量も調整
-					if elementType == Input {
-
+						// 両者負担の場合は投入量から正常仕損量を控除
+						for k := 0; k < len(b.Costs[i].Elements); k++ {
+							if b.Costs[i].Elements[k].Type == Input {
+								b.Costs[i].Elements[k].Unit -= b.Costs[i].Elements[j].Unit
+							}
+						}
+					} else {
+						b.Costs[i].Elements[j].NDBurden = 0
 					}
-				} else {
-					b.Costs[i].Elements[j].NDBurden = 0
 				}
 			}
 		}
