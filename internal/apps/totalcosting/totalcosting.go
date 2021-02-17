@@ -206,6 +206,17 @@ func (c Cost) GetNormalDefectUnit() int {
 	return 0
 }
 
+// GetTotalNDBurden is 負担量合計の計算
+func (c Cost) GetTotalNDBurden() int {
+	total := 0
+
+	for _, e := range c.Elements {
+		total += e.NDBurden
+	}
+
+	return total
+}
+
 // Box is 解く問題
 type Box struct {
 	Master           []Element
