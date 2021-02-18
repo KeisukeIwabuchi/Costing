@@ -300,6 +300,45 @@ func TestGetNormalDefectUnit(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestGetTotalNDBurden(t *testing.T) {
+	first := Element{
+		Type:     First,
+		Unit:     300,
+		NDBurden: 0,
+	}
+	input := Element{
+		Type:     Input,
+		Unit:     1380,
+		NDBurden: 0,
+	}
+	output := Element{
+		Type:     Output,
+		Unit:     1320,
+		NDBurden: 1020,
+	}
+	normalDefect := Element{
+		Type:     NormalDefect,
+		Unit:     120,
+		NDBurden: 0,
+	}
+	last := Element{
+		Type:     Last,
+		Unit:     240,
+		NDBurden: 240,
+	}
+
+	var material Cost
+	material.Elements = append(material.Elements, first)
+	material.Elements = append(material.Elements, input)
+	material.Elements = append(material.Elements, output)
+	material.Elements = append(material.Elements, normalDefect)
+	material.Elements = append(material.Elements, last)
+
+	actual := material.GetTotalNDBurden()
+	expected := 1260
+	assert.Equal(t, expected, actual)
+}
+
 func TestCalculationEOFMCost(t *testing.T) {
 	materialLast := Element{
 		Type:  Last,
