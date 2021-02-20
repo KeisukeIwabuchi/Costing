@@ -206,6 +206,17 @@ func (c Cost) GetNormalDefectUnit() int {
 	return 0
 }
 
+// GetNormalDefectCost is 正常仕損の費用を返す
+func (c Cost) GetNormalDefectCost() float64 {
+	for _, e := range c.Elements {
+		if e.Type == NormalDefect {
+			return e.Cost()
+		}
+	}
+
+	return 0
+}
+
 // GetTotalNDBurden is 負担量合計の計算
 func (c Cost) GetTotalNDBurden() int {
 	total := 0
