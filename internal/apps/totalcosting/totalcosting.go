@@ -431,7 +431,13 @@ func (b *Box) Run() {
 
 		// 非度外視法の場合は
 		if b.Costs[i].DMethod == NonNeglecting {
+			//
+			total := b.Costs[i].GetTotalNDBurden()
 
+			for j := 0; j < len(b.Costs[i].Elements); j++ {
+				percentage := float64(b.Costs[i].Elements[j].NDBurden) / float64(total)
+				b.Costs[i].Elements[j].AddCost(b.Costs[i].GetNormalDefectCost() * percentage)
+			}
 		}
 	}
 
