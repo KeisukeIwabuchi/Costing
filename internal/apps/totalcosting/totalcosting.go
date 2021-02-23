@@ -423,21 +423,11 @@ func (b *Box) Run() {
 
 	// 正常仕損の扱い
 	for i := 0; i < cCount; i++ {
-		// 度外視法
-		if b.Costs[i].DMethod == Neglecting {
-			// 月末仕掛品進捗度が正常仕損発生点を超えていれば両者負担
+		total := b.Costs[i].GetTotalNDBurden()
 
-		}
-
-		// 非度外視法の場合は
-		if b.Costs[i].DMethod == NonNeglecting {
-			//
-			total := b.Costs[i].GetTotalNDBurden()
-
-			for j := 0; j < len(b.Costs[i].Elements); j++ {
-				percentage := float64(b.Costs[i].Elements[j].NDBurden) / float64(total)
-				b.Costs[i].Elements[j].AddCost(b.Costs[i].GetNormalDefectCost() * percentage)
-			}
+		for j := 0; j < len(b.Costs[i].Elements); j++ {
+			percentage := float64(b.Costs[i].Elements[j].NDBurden) / float64(total)
+			b.Costs[i].Elements[j].AddCost(b.Costs[i].GetNormalDefectCost() * percentage)
 		}
 	}
 
