@@ -97,7 +97,11 @@ func TestCalulateInputUnit(t *testing.T) {
 	}
 	output := Element{
 		Type: Output,
-		Unit: 1440,
+		Unit: 1200,
+	}
+	normalDefect := Element{
+		Type: NormalDefect,
+		Unit: 240,
 	}
 	last := Element{
 		Type:     Last,
@@ -109,6 +113,7 @@ func TestCalulateInputUnit(t *testing.T) {
 	master = append(master, first)
 	master = append(master, input)
 	master = append(master, output)
+	master = append(master, normalDefect)
 	master = append(master, last)
 
 	var material Cost
@@ -118,13 +123,14 @@ func TestCalulateInputUnit(t *testing.T) {
 	material.CalulateInputUnit(master)
 
 	expected := []int{
-		300,
-		1380,
-		1440,
+		0,
+		0,
+		1200,
+		0,
 		240,
 	}
 	for i, e := range material.Elements {
-		actual := e.Unit
+		actual := e.NDBurden
 		assert.Equal(t, expected[i], actual)
 	}
 }

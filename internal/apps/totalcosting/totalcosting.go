@@ -100,10 +100,16 @@ func (c *Cost) CalulateInputUnit(master []Element) {
 			element.Progress = m.Progress
 		}
 
-		if m.Progress < c.InputTiming {
-			element.Unit = 0
+		if m.IsLeftElement() {
+			element.NDBurden = 0
 		} else {
-			element.Unit = m.Unit
+			if m.Type == NormalDefect {
+				element.NDBurden = 0
+			} else if m.Progress < c.InputTiming {
+				element.NDBurden = 0
+			} else {
+				element.NDBurden = m.Unit
+			}
 		}
 
 		c.Elements[i] = element
@@ -283,7 +289,7 @@ func (b *Box) Run() {
 	// 数量の計算
 	cCount := len(b.Costs)
 	for i := 0; i < cCount; i++ {
-		// // 定点で投入
+		// 定点で投入
 		if !b.Costs[i].InputOnAvg {
 			// 投入量の計算
 			b.Costs[i].CalulateInputUnit(b.Master)
