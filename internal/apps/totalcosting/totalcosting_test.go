@@ -472,7 +472,7 @@ func TestCalculationProdutCost(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestCalculationProdutAvgCost(t *testing.T) {
+func TestCalculationProductAvgCost(t *testing.T) {
 	materialProduct := Element{
 		Type:  Output,
 		Price: 550.0,
