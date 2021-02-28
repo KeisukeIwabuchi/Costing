@@ -534,11 +534,13 @@ func TestRun(t *testing.T) {
 	material.InputOnAvg = false
 	material.InputTiming = 0.0
 	material.CMethod = AVG
+	material.DMethod = NonNeglecting
 	material.FirstCost = 206400
 	material.InputCost = 717600
 
 	processing.InputOnAvg = true
 	processing.CMethod = AVG
+	processing.DMethod = NonNeglecting
 	processing.FirstCost = 161640
 	processing.InputCost = 972360
 
@@ -550,4 +552,8 @@ func TestRun(t *testing.T) {
 	actual := box.ProductAvgCost
 	expected := 1300.0
 	assert.Equal(t, expected, actual)
+
+	actual2 := box.Costs[1].Elements[3].Unit
+	expected2 := 72
+	assert.Equal(t, expected2, actual2)
 }

@@ -93,6 +93,8 @@ func (c *Cost) CalulateInputUnit(master []Element) {
 		var element Element
 
 		element.Type = m.Type
+		element.Unit = m.Unit
+		element.Progress = m.Progress
 
 		if element.Type == Output {
 			element.Progress = 1.0
@@ -126,6 +128,8 @@ func (c *Cost) CalulateConversionUnit(master []Element) {
 		var element Element
 
 		element.Type = m.Type
+		element.Unit = m.Unit
+		element.Progress = m.Progress
 
 		if element.Type == Input {
 			c.Elements[i] = element
